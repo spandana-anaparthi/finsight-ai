@@ -35,3 +35,9 @@ models/
 
 # Sample financial documents - review sharing permissions first
 sample_documents/
+
+# Generated extraction outputs
+extraction_outputs/
+
+# Backup files
+*.bak

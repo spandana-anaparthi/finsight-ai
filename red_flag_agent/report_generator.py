@@ -21,7 +21,7 @@ class ReportGenerator:
         }.get(report.overall_risk_level, report.overall_risk_level)
 
         lines = [
-            f"# Finsight AI — Red Flag Forensic Audit Report",
+            f"# 🚩 Finsight AI — Red Flag Forensic Audit Report",
             f"**Target Company:** {report.company_name}  ",
             f"**Audit Timestamp:** {report.analyzed_at}  ",
             f"**Source Document / Input:** {report.scan_source}  ",

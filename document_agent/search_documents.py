@@ -17,7 +17,7 @@ MODEL_DIR = BASE_DIR / "models" / "all-MiniLM-L6-v2"
 EMBEDDINGS_DIR = BASE_DIR / "embeddings"
 
 MAX_LENGTH = 128
-TOP_K = 5
+TOP_K = 15
 
 
 # --------------------------------------------------

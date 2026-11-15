@@ -18,6 +18,8 @@ import {
   scanDocumentPDF,
   scanText,
   getRedFlagHealth,
+  getSampleCases,
+  scanSampleCase,
 } from '../services/redFlagService.js'
 
 export default function RedFlagAudit() {
@@ -30,9 +32,13 @@ export default function RedFlagAudit() {
   const [report, setReport] = useState(null)
   const [filterSeverity, setFilterSeverity] = useState('ALL')
   const [apiOnline, setApiOnline] = useState(null)
+  const [sampleCases, setSampleCases] = useState([])
+  const [selectedSample, setSelectedSample] = useState('')
+  const [samplesLoading, setSamplesLoading] = useState(true)
 
   useEffect(() => {
     checkHealth()
+    loadSamples()
   }, [])
 
   const checkHealth = async () => {
@@ -41,6 +47,18 @@ export default function RedFlagAudit() {
       setApiOnline(true)
     } catch {
       setApiOnline(false)
+    }
+  }
+
+  const loadSamples = async () => {
+    try {
+      const data = await getSampleCases()
+      setSampleCases(data)
+      setSelectedSample(data[0]?.id || '')
+    } catch (err) {
+      console.error('Failed to load benchmark cases:', err)
+    } finally {
+      setSamplesLoading(false)
     }
   }
 
@@ -75,6 +93,25 @@ export default function RedFlagAudit() {
       toast(`Text forensic audit completed!`, 'success')
     } catch (err) {
       toast(`Text scan failed: ${err.message}`, 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleBenchmarkScan = async () => {
+    if (!selectedSample) {
+      toast('Please select a benchmark company.', 'error')
+      return
+    }
+    setLoading(true)
+    setReport(null)
+    setFilterSeverity('ALL')
+    try {
+      const data = await scanSampleCase(selectedSample)
+      setReport(data)
+      toast(`Benchmark audit completed for ${data.company_name}!`, 'success')
+    } catch (err) {
+      toast(`Benchmark audit failed: ${err.message}`, 'error')
     } finally {
       setLoading(false)
     }
@@ -125,6 +162,44 @@ export default function RedFlagAudit() {
           <span className={`badge ${apiOnline ? 'ok' : 'wn'}`}>
             Backend Agent: {apiOnline ? 'Active (Port 8000/8001)' : 'Connecting...'}
           </span>
+        </div>
+      </div>
+
+      {/* Benchmark Audit */}
+      <div className="card" style={{ marginBottom: '16px' }}>
+        <h3>Run Benchmark Audit</h3>
+        <p className="muted sm">
+          Run the Red Flag Agent against pre-loaded financial benchmark cases.
+        </p>
+        <div className="row gap wrap" style={{ marginTop: '12px' }}>
+          <div className="field" style={{ minWidth: '250px', flex: 1 }}>
+            <label>Select Benchmark Company</label>
+            <div className="inp-wrap">
+              <select
+                value={selectedSample}
+                onChange={(e) => setSelectedSample(e.target.value)}
+                disabled={samplesLoading || loading}
+                style={{ width: '100%' }}
+              >
+                <option value="">
+                  {samplesLoading ? 'Loading benchmarks...' : 'Select a company'}
+                </option>
+                {sampleCases.map((sample) => (
+                  <option key={sample.id} value={sample.id}>
+                    {sample.name} ? {sample.company}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <button
+            className="btn pri"
+            disabled={!selectedSample || samplesLoading || loading}
+            onClick={handleBenchmarkScan}
+          >
+            {loading ? <Loader2 className="spin" size={16} /> : <ShieldAlert size={16} />}
+            Run Benchmark Audit
+          </button>
         </div>
       </div>
 

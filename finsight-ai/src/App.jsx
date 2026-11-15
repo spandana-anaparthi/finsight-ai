@@ -8,6 +8,7 @@ import RedFlagAudit from './pages/RedFlagAudit.jsx'
 import DocumentComparison from './pages/DocumentComparison.jsx'
 import AnalysisHistory from './pages/AnalysisHistory.jsx'
 import Reports from './pages/Reports.jsx'
+import FinancialExtraction from './pages/FinancialExtraction.jsx'
 import Settings from './pages/Settings.jsx'
 import HelpSupport from './pages/HelpSupport.jsx'
 
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="compare" element={<DocumentComparison />} />
         <Route path="history" element={<AnalysisHistory />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="extract" element={<FinancialExtraction />} />
         <Route path="settings" element={<Settings />} />
         <Route path="help" element={<HelpSupport />} />
       </Route>

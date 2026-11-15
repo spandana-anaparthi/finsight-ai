@@ -1,5 +1,4 @@
-
-import tempfile
+﻿import tempfile
 from fastapi.responses import FileResponse
 from report_agent.orchestrator import FinancialResearchOrchestrator
 from contextlib import asynccontextmanager
@@ -9,6 +8,7 @@ import uuid
 
 import chromadb
 import numpy as np
+from extraction_agent.extractor import extract_financial_information
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 BASE_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE_DIR / "document_agent"))
 
-from search_documents import load_search_engine
+from search_documents import load_search_engine, search_documents
 from document_agent.index_uploaded_document import index_pdf
 
 UPLOAD_DIR = BASE_DIR / "uploaded_documents"
@@ -63,6 +63,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -76,6 +78,9 @@ app.include_router(red_flag_router)
 class SearchRequest(BaseModel):
     question: str = Field(min_length=1, max_length=1000)
     company: str | None = None
+
+class ExtractionRequest(BaseModel):
+    company: str = Field(min_length=1, max_length=100)
 
 
 def embed_query(question):
@@ -303,3 +308,51 @@ async def generate_financial_report(
     finally:
         if temporary_path:
             temporary_path.unlink(missing_ok=True)
+
+
+@app.post("/api/extract")
+def extract_company_data(request: ExtractionRequest):
+
+    company = request.company.strip()
+
+    if company.lower() not in {"amazon", "apple"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Choose Amazon or Apple."
+        )
+
+    try:
+        print(f"Starting extraction for {company}...")
+
+        results = search_documents(
+            query=(
+                f"{company} annual financial statements, "
+                "revenue, net income, operating income, "
+                "assets, liabilities and financial ratios"
+            ),
+            embeddings=engine["embeddings"],
+            metadata=engine["metadata"],
+            tokenizer=engine["tokenizer"],
+            session=engine["session"],
+            input_names=engine["input_names"],
+            top_k=15,
+            company=company
+        )
+
+        print(f"Retrieved {len(results)} chunks.")
+
+
+        extracted_data = extract_financial_information(
+            search_results=results,
+            company=company
+        )
+
+        return extracted_data
+
+    except Exception as exc:
+        print("Extraction error:", str(exc))
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"Financial extraction failed: {exc}"
+        ) from exc

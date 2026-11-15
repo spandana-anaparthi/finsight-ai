@@ -80,3 +80,159 @@ details{padding:10px 0;border-bottom:1px solid var(--bd)}summary{cursor:pointer;
 .search{min-width:0;flex:1}.top{padding:10px 12px}.page{padding:16px}}
 @media(max-width:480px){.g4{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*:before{animation:none!important;transition:none!important}}
+
+/* =====================================
+   FINANCIAL EXTRACTION DASHBOARD
+===================================== */
+
+.extraction-dashboard {
+  display: grid;
+  gap: 18px;
+  margin-top: 20px;
+  min-width: 0;
+}
+
+.extract-result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.extract-result-heading h2 {
+  font-size: 1.4rem;
+}
+
+.extract-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.extract-kpi {
+  min-width: 0;
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+.extract-kpi:hover {
+  transform: translateY(-3px);
+  border-color: var(--c);
+}
+
+.extract-kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.extract-kpi-top svg {
+  color: var(--c);
+}
+
+.extract-kpi h2 {
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
+  overflow-wrap: anywhere;
+  margin-bottom: 6px;
+}
+
+.extract-section {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.extract-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.extract-section h3 svg {
+  color: var(--c);
+}
+
+.extract-chart {
+  width: 100%;
+  height: 280px;
+  min-width: 0;
+  margin-top: 8px;
+}
+
+.extract-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.extract-table {
+  min-width: 650px;
+  margin-top: 0;
+  border-collapse: collapse;
+}
+
+.extract-table th {
+  background: var(--bg2);
+  white-space: nowrap;
+}
+
+.extract-table td {
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.extract-table tbody tr:hover {
+  background: rgba(59, 130, 246, .06);
+}
+
+.extract-source {
+  min-width: 110px;
+  font-size: .82rem;
+}
+
+.extract-source summary {
+  color: var(--c);
+}
+
+.extract-source p {
+  overflow-wrap: anywhere;
+  font-weight: 400;
+}
+
+.extract-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  font-size: .85rem;
+}
+
+.extract-note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--c);
+}
+
+@media(max-width: 1000px) {
+  .extract-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media(max-width: 600px) {
+  .extract-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .extract-result-heading {
+    align-items: flex-start;
+  }
+
+  .extract-chart {
+    height: 240px;
+  }
+}
